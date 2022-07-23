@@ -60,32 +60,20 @@ main:
     call SetVDPAddress
     ; 2. Output colour data
     ld hl,PaletteData
-    ld b,PaletteDataEnd-PaletteData
-    ld c,VdpData
-    otir
+    ld bc,PaletteDataEnd-PaletteData
+    call CopyToVDP
 
     ;==============================================================
     ; Load tiles (font)
     ;==============================================================
     ; 1. Set VRAM write address to tile index 0
     ; by outputting $4000 ORed with $0000
-    ld a,$00
-    out (VDPControl),a
-    ld a,$40
-    out (VDPControl),a
+    ld hl,$0000 | VRAMWrite
+    call SetVDPAddress
     ; 2. Output tile data
     ld hl,FontData              ; Location of tile data
     ld bc,FontDataEnd-FontData  ; Counter for number of bytes to write
-    WriteTilesLoop:
-        ; Output data byte then three zeroes, because our tile data is 1 bit
-        ; and must be increased to 4 bit
-        ld a,(hl)        ; Get data byte
-        out (VdpData),a
-        inc hl           ; Add one to hl so it points to the next data byte
-        dec bc
-        ld a,b
-        or c
-        jp nz,WriteTilesLoop
+    call CopyToVDP
 
     ;==============================================================
     ; Write text to name table
@@ -137,6 +125,19 @@ SetVDPAddress:
     out (VDPControl),a
     ld a,h
     out (VDPControl),a
+    ret
+
+CopyToVDP:
+; Copies data to the VDP
+; Parameters: hl = data address, bc = data length
+; Affects: a, hl, bc
+    ld a,(hl)       ; Get data byte
+    out (VDPData),a
+    inc hl          ; Point to next letter
+    dec bc
+    ld a,b
+    or c
+    jr nz,CopyToVDP
     ret
 
 ;==============================================================
