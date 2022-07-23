@@ -80,10 +80,8 @@ main:
     ;==============================================================
     ; 1. Set VRAM write address to name table index 0
     ; by outputting $4000 ORed with $3800+0
-    ld a,$00
-    out (VDPControl),a
-    ld a,$38|$40
-    out (VDPControl),a
+    ld hl,$3800 | VRAMWrite
+    call SetVDPAddress
     ; 2. Output tilemap data
     ld hl,Message
     ld bc,MessageEnd-Message  ; Counter for number of bytes to write
