@@ -49,7 +49,7 @@ main:
         dec bc
         ld a,b
         or c
-        jp nz,ClearVRAMLoop
+        jr nz,ClearVRAMLoop
 
     ;==============================================================
     ; Load palette
@@ -94,7 +94,7 @@ main:
         dec bc
         ld a,b
         or c
-        jp nz,WriteTextLoop
+        jr nz,WriteTextLoop
 
     ; Turn screen on
     ld a,%11000000
@@ -110,7 +110,7 @@ main:
 
     ; Infinite loop to stop program
 Loop:
-     jp Loop
+     jr Loop
 
 
 ;==============================================================
