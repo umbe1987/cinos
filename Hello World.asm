@@ -1,3 +1,11 @@
+;==============================================================
+; SMS defines
+;==============================================================
+VDPControl equ $bf
+VdpData equ $be
+VRAMWrite equ $4000
+CRAMWrite equ $c000
+
     org $0000
 ;==============================================================
 ; Boot section
@@ -22,9 +30,9 @@ main:
     ;==============================================================
     ; Set up VDP registers
     ;==============================================================
-    ld hl,VdpData
-    ld b,VdpDataEnd-VdpData
-    ld c,$bf
+    ld hl,VDPInitData
+    ld b,VDPInitDataEnd-VDPInitData
+    ld c,VDPControl
     otir
 
     ;==============================================================
@@ -32,14 +40,14 @@ main:
     ;==============================================================
     ; 1. Set VRAM write address to 0 by outputting $4000 ORed with $0000
     ld a,$00
-    out ($bf),a
+    out (VDPControl),a
     ld a,$40
-    out ($bf),a
+    out (VDPControl),a
     ; 2. Output 16KB of zeroes
-    ld bc, $4000    ; Counter for 16KB of VRAM
+    ld bc, VRAMWrite    ; Counter for 16KB of VRAM
     ClearVRAMLoop:
         ld a,$00    ; Value to write
-        out ($be),a ; Output to VRAM address, which is auto-incremented after each write
+        out (VdpData),a ; Output to VRAM address, which is auto-incremented after each write
         dec bc
         ld a,b
         or c
@@ -51,13 +59,13 @@ main:
     ; 1. Set VRAM write address to CRAM (palette) address 0 (for palette index 0)
     ; by outputting $c000 ORed with $0000
     ld a,$00
-    out ($bf),a
+    out (VDPControl),a
     ld a,$c0
-    out ($bf),a
+    out (VDPControl),a
     ; 2. Output colour data
     ld hl,PaletteData
     ld b,PaletteDataEnd-PaletteData
-    ld c,$be
+    ld c,VdpData
     otir
 
     ;==============================================================
@@ -66,9 +74,9 @@ main:
     ; 1. Set VRAM write address to tile index 0
     ; by outputting $4000 ORed with $0000
     ld a,$00
-    out ($bf),a
+    out (VDPControl),a
     ld a,$40
-    out ($bf),a
+    out (VDPControl),a
     ; 2. Output tile data
     ld hl,FontData              ; Location of tile data
     ld bc,FontDataEnd-FontData  ; Counter for number of bytes to write
@@ -76,7 +84,7 @@ main:
         ; Output data byte then three zeroes, because our tile data is 1 bit
         ; and must be increased to 4 bit
         ld a,(hl)        ; Get data byte
-        out ($be),a
+        out (VdpData),a
         inc hl           ; Add one to hl so it points to the next data byte
         dec bc
         ld a,b
@@ -89,15 +97,15 @@ main:
     ; 1. Set VRAM write address to name table index 0
     ; by outputting $4000 ORed with $3800+0
     ld a,$00
-    out ($bf),a
+    out (VDPControl),a
     ld a,$38|$40
-    out ($bf),a
+    out (VDPControl),a
     ; 2. Output tilemap data
     ld hl,Message
     ld bc,MessageEnd-Message  ; Counter for number of bytes to write
     WriteTextLoop:
         ld a,(hl)    ; Get data byte
-        out ($be),a
+        out (VdpData),a
         inc hl       ; Point to next letter
         dec bc
         ld a,b
@@ -112,9 +120,9 @@ main:
 ;          ||`----- 28 row/224 line mode
 ;          |`------ VBlank interrupts
 ;          `------- Enable display
-    out ($bf),a
+    out (VDPControl),a
     ld a,$81
-    out ($bf),a
+    out (VDPControl),a
 
     ; Infinite loop to stop program
 Loop:
@@ -133,9 +141,9 @@ PaletteData:
 PaletteDataEnd:
 
 ; VDP initialisation data
-VdpData:
+VDPInitData:
     db $04,$80,$00,$81,$ff,$82,$ff,$85,$ff,$86,$ff,$87,$00,$88,$00,$89,$ff,$8a
-VdpDataEnd:
+VDPInitDataEnd:
 
 FontData:
     db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
