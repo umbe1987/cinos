@@ -39,10 +39,8 @@ main:
     ; Clear VRAM
     ;==============================================================
     ; 1. Set VRAM write address to 0 by outputting $4000 ORed with $0000
-    ld a,$00
-    out (VDPControl),a
-    ld a,$40
-    out (VDPControl),a
+    ld hl,$0000 | VRAMWrite
+    call SetVDPAddress
     ; 2. Output 16KB of zeroes
     ld bc, VRAMWrite    ; Counter for 16KB of VRAM
     ClearVRAMLoop:
@@ -58,10 +56,8 @@ main:
     ;==============================================================
     ; 1. Set VRAM write address to CRAM (palette) address 0 (for palette index 0)
     ; by outputting $c000 ORed with $0000
-    ld a,$00
-    out (VDPControl),a
-    ld a,$c0
-    out (VDPControl),a
+    ld hl,$0000 | CRAMWrite
+    call SetVDPAddress
     ; 2. Output colour data
     ld hl,PaletteData
     ld b,PaletteDataEnd-PaletteData
@@ -127,6 +123,21 @@ main:
     ; Infinite loop to stop program
 Loop:
      jp Loop
+
+
+;==============================================================
+; Helpers
+;==============================================================
+
+SetVDPAddress:
+; Sets the VDP address
+; Parameters: hl = address
+; Affects: a
+    ld a,l
+    out (VDPControl),a
+    ld a,h
+    out (VDPControl),a
+    ret
 
 ;==============================================================
 ; Data
