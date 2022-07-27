@@ -68,7 +68,7 @@ main:
     ;==============================================================
     ; 1. Set VRAM write address to tile index 0
     ; by outputting $4000 ORed with $0000
-    ld hl,$0000 | VRAMWrite
+    ld hl,$0000 | VRAMWrite+$0400
     call SetVDPAddress
     ; 2. Output tile data
     ld hl,FontData              ; Location of tile data
@@ -86,9 +86,11 @@ main:
     ld hl,Message
     ld bc,MessageEnd-Message  ; Counter for number of bytes to write
     WriteTextLoop:
-        ld a,(hl)    ; Get data byte
+        ld a,(hl)       ; Get data byte
         out (VdpData),a
-        inc hl       ; Point to next letter
+        xor a           ; Set a to $00
+        out (VDPData),a ; Write second byte to screen map
+        inc hl          ; Point to next letter
         dec bc
         ld a,b
         or c
@@ -143,7 +145,7 @@ CopyToVDP:
 ;==============================================================
 
 Message:
-    dw $28,$45,$4c,$4c,$4f,$00,$37,$4f,$52,$4c,$44,$01
+    text "Hello World!"
 MessageEnd:
 
 ; SMS color: --BBGGRR (e.g. RGB yellow = 255,255,0 > %00001111 > $f)
