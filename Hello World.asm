@@ -160,6 +160,6 @@ VDPInitData:
 VDPInitDataEnd:
 
 FontData:
-    incbin "font.bin"
+    incbin "assets/font.bin"
 FontDataEnd:
 
