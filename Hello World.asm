@@ -151,7 +151,7 @@ MessageEnd:
 ; SMS color: --BBGGRR (e.g. RGB yellow = 255,255,0 > %00001111 > $f)
 ; https://coolconversion.com/math/binary-octal-hexa-decimal/Convert_hex_number_3F_in_binary_
 PaletteData:
-    db $30,$f
+    include "assets/palette.inc"
 PaletteDataEnd:
 
 ; VDP initialisation data
