@@ -62,11 +62,11 @@ main:
     ;==============================================================
     ; 1. Set VRAM write address to tile index 0
     ; by outputting $4000 ORed with $0000
-    ld hl,$0000 | VRAMWrite+$0400
+    ld hl,$0000 | VRAMWrite
     call SetVDPAddress
     ; 2. Output tile data
-    ld hl,FontData              ; Location of tile data
-    ld bc,FontDataEnd-FontData  ; Counter for number of bytes to write
+    ld hl,TileData              ; Location of tile data
+    ld bc,TileDataEnd-TileData  ; Counter for number of bytes to write
     call CopyToVDP
 
     ;==============================================================
@@ -77,21 +77,12 @@ main:
     ld hl,$3800 | VRAMWrite
     call SetVDPAddress
     ; 2. Output tilemap data
-    ld hl,Message
-    ld bc,MessageEnd-Message  ; Counter for number of bytes to write
-    WriteTextLoop:
-        ld a,(hl)       ; Get data byte
-        out (VdpData),a
-        xor a           ; Set a to $00
-        out (VDPData),a ; Write second byte to screen map
-        inc hl          ; Point to next letter
-        dec bc
-        ld a,b
-        or c
-        jr nz,WriteTextLoop
+    ld hl,TileMapData
+    ld bc,TileMapDataEnd-TileMapData  ; Counter for number of bytes to write
+    call CopyToVDP
 
     ; Turn screen on
-    ld a,%11000000
+    ld a,%01000000
 ;          |||| |`- Zoomed sprites -> 16x16 pixels
 ;          |||| `-- Doubled sprites -> 2 tiles per sprite, 8x16
 ;          |||`---- 30 row/240 line mode
@@ -129,8 +120,8 @@ CopyToVDP:
     out (VDPData),a
     inc hl          ; Point to next letter
     dec bc
-    ld a,b
-    or c
+    ld a,c
+    or b
     jr nz,CopyToVDP
     ret
 
@@ -138,9 +129,9 @@ CopyToVDP:
 ; Data
 ;==============================================================
 
-Message:
-    text "Hello World!"
-MessageEnd:
+TileMapData:
+    include "assets/tilemap.inc"
+TileMapDataEnd:
 
 ; SMS color: --BBGGRR (e.g. RGB yellow = 255,255,0 > %00001111 > $f)
 ; https://coolconversion.com/math/binary-octal-hexa-decimal/Convert_hex_number_3F_in_binary_
@@ -153,7 +144,7 @@ VDPInitData:
     db $04,$80,$00,$81,$ff,$82,$ff,$85,$ff,$86,$ff,$87,$00,$88,$00,$89,$ff,$8a
 VDPInitDataEnd:
 
-FontData:
-    incbin "assets/font.bin"
-FontDataEnd:
+TileData:
+    include "assets/tiles.inc"
+TileDataEnd:
 
