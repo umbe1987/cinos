@@ -43,13 +43,7 @@ main:
     call SetVDPAddress
     ; 2. Output 16KB of zeroes
     ld bc, VRAMWrite    ; Counter for 16KB of VRAM
-    ClearVRAMLoop:
-        ld a,$00    ; Value to write
-        out (VdpData),a ; Output to VRAM address, which is auto-incremented after each write
-        dec bc
-        ld a,b
-        or c
-        jr nz,ClearVRAMLoop
+    call CopyToVDP
 
     ;==============================================================
     ; Load palette
