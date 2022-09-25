@@ -8,6 +8,7 @@ CRAMWrite equ $c000
 SAT equ $3f00           ; starting location of SAT in VRAM
 ply equ $c100           ; player Y (end of SAT buffer, which is $c000-c0ff)
 plx equ $c101           ; player X
+VDPStatus equ $c102     ; VDP Status Flags
 
 ; Map of the sprite attribute table (sat) buffer.
 ; Contains sprites' vertical position (vpos), horizontal posi-
@@ -19,20 +20,29 @@ plrcc equ $c081         ; first player cc.
 
 endspr equ $c00c       ; first unused sprite.
 
-    org $0000
 ;==============================================================
 ; Boot section
 ;==============================================================
-    di              ; disable interrupts
-    im 1            ; Interrupt mode 1
-    jp main         ; jump to main program
+    org $0000
+        di              ; disable interrupts
+        im 1            ; Interrupt mode 1
+        jp main         ; jump to main program
 
-    org $0066
+;==============================================================
+; Do stuff when interrupts occurs
+;==============================================================
+    org $0038
+        in a,(VDPControl)   ; read status flags from VDP control
+        ld (VDPStatus),a    ; save vdp status
+
+        reti                ; return from interrupt
+        
 ;==============================================================
 ; Pause button handler
 ;==============================================================
-    ; Do nothing
-    retn
+    org $0066
+        retn            ; Do nothing
+
 
 ;==============================================================
 ; Main program
@@ -136,10 +146,11 @@ main:
     ld (hl),$d0                ; insert sprite terminator here.
 
     call UpdateSATBuff         ; update SAT buffer.
+
     call LoadSAT               ; load sat from buffer.
 
     ; Turn screen on
-    ld a,%01000000
+    ld a,%01100000
 ;          |||| |`- Zoomed sprites -> 16x16 pixels
 ;          |||| `-- Doubled sprites -> 2 tiles per sprite, 8x16
 ;          |||`---- 30 row/240 line mode
@@ -150,10 +161,20 @@ main:
     ld a,$81
     out (VDPControl),a
 
-    ; Infinite loop to stop program
+    ; This is the main loop.
 Loop:
-     jr Loop
+    ei                  ; enable maskable interrupts (e.g. frame interrput)
+    halt                ; stop CPU until interrupt occurs
+    call WaitVBlank
 
+    ; Update vdp right when vblank begins!
+
+    call LoadSAT        ; load sat from buffer.
+
+    ; Update player sprites in the buffer.
+    call UpdateSATBuff
+
+    jp Loop             ; jump back to start of main loop
 
 ;==============================================================
 ; Helpers
@@ -263,6 +284,16 @@ PlayerSprN:
     or b
     jr nz,PlayerSprN
 
+    ret
+
+WaitVBlank:
+; Wait for vertical blanking phase.
+    ld a,(VDPStatus)     ; get VDP status flags
+    bit 7,a              ; get frame interrupt
+    jp z,WaitVBlank      ; keep looping if FI is set
+    res 7,a              ; reset bit 7 of VDP status flags
+    ld (VDPStatus),a     ; update VDP status flags
+    
     ret
 
 ;==============================================================
