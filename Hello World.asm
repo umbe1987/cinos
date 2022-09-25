@@ -5,10 +5,13 @@ VDPControl equ $bf
 VdpData equ $be
 VRAMWrite equ $4000
 CRAMWrite equ $c000
+ControlPortP1 equ $dc   ; Control Port Player 1
 SAT equ $3f00           ; starting location of SAT in VRAM
 ply equ $c100           ; player Y (end of SAT buffer, which is $c000-c0ff)
 plx equ $c101           ; player X
 VDPStatus equ $c102     ; VDP Status Flags
+input equ $c103         ; input from player 1 controller.
+hspeed equ 3            ; player horizontal speed
 
 ; Map of the sprite attribute table (sat) buffer.
 ; Contains sprites' vertical position (vpos), horizontal posi-
@@ -171,6 +174,34 @@ Loop:
 
     call LoadSAT        ; load sat from buffer.
 
+    call GetP1Keys      ; read controller port.
+
+MovePlayerRight:
+; Test if player wants to move right.
+    ld a,(input)         ; read input from ram mirror.
+    bit 3,a              ; is right key pressed?
+    jp nz,MovePlayerLeft ; no, then check for left movement
+
+    ; move the player to the right
+    ld a,(plx)           ; get player's hpos (x-coordinate)
+    add a,hspeed         ; add constant horizontal speed
+    ld (plx),a           ; update player x-coordinate
+ 
+    jp MovePlayerEnd     ; exit move player part
+
+MovePlayerLeft:
+; Test if player wants to move left.
+    bit 2,a              ; is left key pressed?
+    jp nz,MovePlayerEnd  ; no - end key check.
+    
+    ; move the player to the left
+    ld a,(plx)           ; get player's hpos (x-coordinate)
+    sub a,hspeed         ; add constant horizontal speed
+    ld (plx),a           ; update player x-coordinate
+
+MovePlayerEnd:
+; end of player movements
+
     ; Update player sprites in the buffer.
     call UpdateSATBuff
 
@@ -293,6 +324,14 @@ WaitVBlank:
     jp z,WaitVBlank      ; keep looping if FI is set
     res 7,a              ; reset bit 7 of VDP status flags
     ld (VDPStatus),a     ; update VDP status flags
+    
+    ret
+
+GetP1Keys:
+; Read player 1 keys (port $dc) into ram mirror (input).
+; Affects: a, hl, bc, de
+    in a,(ControlPortP1) ; read player 1 input port $dc.
+    ld (input),a         ; let variable mirror port status.
     
     ret
 
