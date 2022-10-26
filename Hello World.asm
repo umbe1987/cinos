@@ -12,8 +12,8 @@ plx equ $c101           ; player X
 VDPStatus equ $c102     ; VDP Status Flags
 input equ $c103         ; input from player 1 controller.
 hspeed equ $03          ; player horizontal speed
-scroll equ $c104       ; vdp scroll register buffer.
-HScrollReg equ $08        ; horizontal scroll register
+scroll equ $c104        ; vdp scroll register buffer.
+HScrollReg equ $08      ; horizontal scroll register
 
 ; Map of the sprite attribute table (sat) buffer.
 ; Contains sprites' vertical position (vpos), horizontal posi-
