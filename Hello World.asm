@@ -11,7 +11,8 @@ ply equ $c100           ; player Y (end of SAT buffer, which is $c000-c0ff)
 plx equ $c101           ; player X
 VDPStatus equ $c102     ; VDP Status Flags
 input equ $c103         ; input from player 1 controller.
-hspeed equ 3            ; player horizontal speed
+scroll equ $c104       ; vdp scroll register buffer.
+HScrollReg equ $08        ; horizontal scroll register
 
 ; Map of the sprite attribute table (sat) buffer.
 ; Contains sprites' vertical position (vpos), horizontal posi-
@@ -172,6 +173,13 @@ Loop:
 
     ; Update vdp right when vblank begins!
 
+    ld a,(scroll)       ; Scroll background - update the horizontal scroll buffer.
+    add 1               ; add constant to scroll
+    ld (scroll),a       ; update scroll buffer.
+
+    ld b,HScrollReg     ; make the scroll happening
+    call SetRegister
+
     call LoadSAT        ; load sat from buffer.
 
     call GetP1Keys      ; read controller port.
@@ -220,6 +228,15 @@ SetVDPAddress:
         ld a,h
         out (VDPControl),a
     pop af
+    ret
+
+SetRegister:
+; Write to target register.
+; Parameters: a = byte to be loaded into vdp register, b = target register 0-10
+    out ($bf),a         ; output command word 1/2.
+    ld a,$80            ; VDP register command byte
+    or b
+    out ($bf),a         ; output command word 2/2.
     ret
 
 CopyToVDP:
