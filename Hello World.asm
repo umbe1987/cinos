@@ -11,6 +11,7 @@ ply equ $c100           ; player Y (end of SAT buffer, which is $c000-c0ff)
 plx equ $c101           ; player X
 VDPStatus equ $c102     ; VDP Status Flags
 input equ $c103         ; input from player 1 controller.
+hspeed equ $03          ; player horizontal speed
 scroll equ $c104       ; vdp scroll register buffer.
 HScrollReg equ $08        ; horizontal scroll register
 
@@ -146,12 +147,12 @@ main:
     ld bc,PlayerNEnd-PlayerN    ; Counter for number of bytes to write
     call PlayerSprN             ; set the char codes for player in buffer.
 
-    ld hl,endspr               ; point to end of active sprites.
-    ld (hl),$d0                ; insert sprite terminator here.
+    ld hl,endspr                ; point to end of active sprites.
+    ld (hl),$d0                 ; insert sprite terminator here.
 
-    call UpdateSATBuff         ; update SAT buffer.
+    call UpdateSATBuff          ; update SAT buffer.
 
-    call LoadSAT               ; load sat from buffer.
+    call LoadSAT                ; load sat from buffer.
 
     ; Turn screen on
     ld a,%01100000
