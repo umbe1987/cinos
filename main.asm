@@ -139,6 +139,13 @@ main:
     ld (plx),a        ; set player X.
 
     ;==============================================================
+    ; Initialize scroll register buffer
+    ;==============================================================    
+
+    xor a               ; set A = 0.
+    ld (scroll),a
+
+    ;==============================================================
     ; Put main character in the SAT BUFFER
     ;==============================================================
 
@@ -174,39 +181,46 @@ Loop:
 
     ; Update vdp right when vblank begins!
 
-    ld a,(scroll)       ; Scroll background - update the horizontal scroll buffer.
-    add 1               ; add constant to scroll
-    ld (scroll),a       ; update scroll buffer.
-
-    ld b,HScrollReg     ; make the scroll happening
-    call SetRegister
-
     call LoadSAT        ; load sat from buffer.
 
     call GetP1Keys      ; read controller port.
 
 MovePlayerRight:
-; Test if player wants to move right.
+; Test if player wants to move and scrolls background in the opposite direction to give sense of movement.
     ld a,(input)         ; read input from ram mirror.
     bit 3,a              ; is right key pressed?
     jp nz,MovePlayerLeft ; no, then check for left movement
 
-    ; move the player to the right
-    ld a,(plx)           ; get player's hpos (x-coordinate)
-    add a,hspeed         ; add constant horizontal speed
-    ld (plx),a           ; update player x-coordinate
+    ld a,(scroll)        ; Scroll background - update the horizontal scroll buffer.
+    sub hspeed           ; sub constant speed to scroll
+    ld (scroll),a        ; update scroll buffer.
+
+    ld b,HScrollReg      ; make the scroll happening
+    call SetRegister
  
+;    ; move the player to the right
+;    ld a,(plx)           ; get player's hpos (x-coordinate)
+;    add a,hspeed         ; add constant horizontal speed
+;    ld (plx),a           ; update player x-coordinate
+; 
     jp MovePlayerEnd     ; exit move player part
 
 MovePlayerLeft:
-; Test if player wants to move left.
+; Test if player wants to move and scrolls background in the opposite direction to give sense of movement.
     bit 2,a              ; is left key pressed?
     jp nz,MovePlayerEnd  ; no - end key check.
+
+    ld a,(scroll)        ; Scroll background - update the horizontal scroll buffer.
+    add hspeed           ; add constant speed to scroll
+    ld (scroll),a        ; update scroll buffer.
+
+    ld b,HScrollReg      ; make the scroll happening
+    call SetRegister
     
-    ; move the player to the left
-    ld a,(plx)           ; get player's hpos (x-coordinate)
-    sub a,hspeed         ; add constant horizontal speed
-    ld (plx),a           ; update player x-coordinate
+;    ; move the player to the left
+;    ld a,(plx)           ; get player's hpos (x-coordinate)
+;    sub a,hspeed         ; add constant horizontal speed
+;    ld (plx),a           ; update player x-coordinate
 
 MovePlayerEnd:
 ; end of player movements
