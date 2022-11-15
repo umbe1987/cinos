@@ -14,6 +14,12 @@ input equ $c103         ; input from player 1 controller.
 hspeed equ $03          ; player horizontal speed
 scroll equ $c104        ; vdp scroll register buffer.
 HScrollReg equ $08      ; horizontal scroll register
+NextRowSrc equ $c105    ; store tilemap source row address (2 bytes)
+NextColSrc equ $c107    ; store tilemap source col address (2 bytes)
+NextRowDst equ $c109    ; store tilemap row address in VRAM (2 bytes)
+NextColDst equ $c10b    ; store tilemap col address in VRAM (2 bytes)
+TileMapWidth equ $60    ; TileMap WIDTH
+TileMapHeight equ $1c   ; TileMap HEIGHT
 
 ; Map of the sprite attribute table (sat) buffer.
 ; Contains sprites' vertical position (vpos), horizontal posi-
@@ -117,16 +123,50 @@ main:
     call CopyToVDP
 
     ;==============================================================
-    ; Write text to name table
+    ; Initialize background
     ;==============================================================
-    ; 1. Set VRAM write address to name table index 0
-    ; by outputting $4000 ORed with $3800+0
-    ld hl,$3800 | VRAMWrite
-    call SetVDPAddress
-    ; 2. Output tilemap data
-    ld hl,TileMapData
-    ld bc,TileMapDataEnd-TileMapData  ; Counter for number of bytes to write
-    call CopyToVDP
+    ld hl,0                  ; initial tile source address
+    ld (NextColSrc),hl       ; set source column
+
+    ld hl,0
+    ld (NextColDst),hl
+
+    ; draw entire screen column by column
+    rept 32
+    ; initialize first rows
+        ld hl,0                  ; initial tile source address
+        ld (NextRowSrc),hl       ; set source row
+        ld hl,$3800
+        ld (NextRowDst),hl
+
+        ; update row index with col index
+        ld bc,(NextColSrc)                ; next col tile address
+        ld hl,(NextRowSrc)
+        add hl,bc                         ; add col index to row index
+        ld (NextRowSrc),hl
+
+        ld bc,(NextColDst)                ; next col tile address
+        ld hl,(NextRowDst)
+        add hl,bc                         ; add col index to row index
+        ld (NextRowDst),hl
+
+        call DrawColumn
+
+        ; update source column index
+        ld hl,(NextColSrc)
+        ld b,0
+        ld a,2
+        ld c,a
+        add hl,bc
+        ld (NextColSrc),hl
+        ; update destination column index
+        ld hl,(NextColDst)
+        ld b,0
+        ld a,2
+        ld c,a
+        add hl,bc
+        ld (NextColDst),hl
+    endr
 
     ;==============================================================
     ; Initialize player position
@@ -265,6 +305,45 @@ CopyToVDP:
     ld a,c
     or b
     jr nz,CopyToVDP
+    ret
+
+DrawColumn:
+; draw bg column from tilemap to VRAM (to be used for horizontal scrolling when player moves)
+; The tilemap is usually stored in VRAM at location $3800, and
+; takes up 1792 bytes (32×28×2 bytes).
+; Affects: hl, bc, de
+    ld de,TileMapHeight               ; go through all rows in the tilemap
+    DrawColumnLoop:
+        ; Set VRAM write address to tilemap destination index
+        ld hl,(NextRowDst)
+        ld a,l
+        out (VDPControl),a
+        ld a,h
+        or a,$40
+        out (VDPControl),a
+        ; 2. Output tilemap data
+        ld hl,TileMapData                 ; Location of tile data
+        ld bc,(NextRowSrc)
+        add hl,bc
+        ld bc,2                           ; Counter for number of bytes to write
+        call CopyToVDP
+        
+        ld bc,$40                         ; next row's tile address is always 64 bytes away
+        ld hl,(NextRowDst)
+        add hl,bc                         ; add 64 to the target address
+        ld (NextRowDst),hl                ; store new VRAM row address
+
+        ld hl,TileMapWidth                ; assuming map is a row-major matrix
+        add hl,hl                         ; double tilemap width as tiles are made of 2 bytes (or 1 word)
+        ld bc,(NextRowSrc)
+        add hl,bc                         ; add map's width ×2 (again, a constant) to the source address
+        ld (NextRowSrc),hl                ; store new tilemap source row address
+
+        dec de
+        ld a,e
+        or d
+        jr nz,DrawColumnLoop
+
     ret
 
 LoadSAT:
