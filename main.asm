@@ -128,8 +128,8 @@ main:
     ld hl,0                  ; initial tile source address
     ld (NextColSrc),hl       ; set source column
 
-    ld hl,0
-    ld (NextColDst),hl
+    ld hl,0                  ; initial tile destination address
+    ld (NextColDst),hl       ; set destination column
 
     ; draw entire screen column by column
     rept 32
@@ -313,6 +313,22 @@ DrawColumn:
 ; takes up 1792 bytes (32×28×2 bytes).
 ; Affects: hl, bc, de
     ld de,TileMapHeight               ; go through all rows in the tilemap
+    ; initialize first rows
+    ld hl,0                  ; initial tile source address
+    ld (NextRowSrc),hl       ; set source row
+    ld hl,$3800              ; initialize tile destination address
+    ld (NextRowDst),hl       ; set destination row
+
+    ; update row index with col index
+    ld bc,(NextColSrc)       ; next col tile address
+    ld hl,(NextRowSrc)
+    add hl,bc                ; add col index to row index
+    ld (NextRowSrc),hl
+
+    ld bc,(NextColDst)       ; next col tile address
+    ld hl,(NextRowDst)
+    add hl,bc                ; add col index to row index
+    ld (NextRowDst),hl
     DrawColumnLoop:
         ; Set VRAM write address to tilemap destination index
         ld hl,(NextRowDst)
@@ -343,6 +359,21 @@ DrawColumn:
         ld a,e
         or d
         jr nz,DrawColumnLoop
+    ; this code below is useful for drawing the entire screen before turning on the display
+    ; update source column index
+    ld hl,(NextColSrc)
+    ld b,0
+    ld a,2
+    ld c,a
+    add hl,bc
+    ld (NextColSrc),hl
+    ; update destination column index
+    ld hl,(NextColDst)
+    ld b,0
+    ld a,2
+    ld c,a
+    add hl,bc
+    ld (NextColDst),hl
 
     ret
 
