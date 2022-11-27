@@ -133,39 +133,7 @@ main:
 
     ; draw entire screen column by column
     rept 32
-    ; initialize first rows
-        ld hl,0                  ; initial tile source address
-        ld (NextRowSrc),hl       ; set source row
-        ld hl,$3800
-        ld (NextRowDst),hl
-
-        ; update row index with col index
-        ld bc,(NextColSrc)                ; next col tile address
-        ld hl,(NextRowSrc)
-        add hl,bc                         ; add col index to row index
-        ld (NextRowSrc),hl
-
-        ld bc,(NextColDst)                ; next col tile address
-        ld hl,(NextRowDst)
-        add hl,bc                         ; add col index to row index
-        ld (NextRowDst),hl
-
         call DrawColumn
-
-        ; update source column index
-        ld hl,(NextColSrc)
-        ld b,0
-        ld a,2
-        ld c,a
-        add hl,bc
-        ld (NextColSrc),hl
-        ; update destination column index
-        ld hl,(NextColDst)
-        ld b,0
-        ld a,2
-        ld c,a
-        add hl,bc
-        ld (NextColDst),hl
     endr
 
     ;==============================================================
