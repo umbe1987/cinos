@@ -169,8 +169,21 @@ main:
 
     call LoadSAT                ; load sat from buffer.
 
+    ; Use VDP R0 bit5 to hide left char column (used to update tile when scrolling)
+    ; https://www.smspower.org/Development/SMSOfficialDocs#VDPREGISTERS
+    ld a,%00100110
+;         ||||`---- Sprite Shift
+;         |||`----- Interrupt Enable
+;         ||`------ Left Column Blank
+;         |`------- Horizontal Scroll Inhibit (top 2 char rows)
+;         `-------- Vertical Scroll Inhibit (right 8 char columns)
+    out (VDPControl),a
+    ld a,$80                    ; write to VDP R0
+    out (VDPControl),a
+
     ; Turn screen on
-    ld a,%01100000
+    ; https://www.smspower.org/Development/SMSOfficialDocs#VDPREGISTERS
+    ld a,%11100000
 ;          |||| |`- Zoomed sprites -> 16x16 pixels
 ;          |||| `-- Doubled sprites -> 2 tiles per sprite, 8x16
 ;          |||`---- 30 row/240 line mode
@@ -178,7 +191,7 @@ main:
 ;          |`------ VBlank interrupts
 ;          `------- Enable display
     out (VDPControl),a
-    ld a,$81
+    ld a,$81                    ; write to VDP R1
     out (VDPControl),a
 
     ; This is the main loop.
