@@ -18,8 +18,10 @@ NextRowSrc equ $c105    ; store tilemap source row address (2 bytes)
 NextColSrc equ $c107    ; store tilemap source col address (2 bytes)
 NextRowDst equ $c109    ; store tilemap row address in VRAM (2 bytes)
 NextColDst equ $c10b    ; store tilemap col address in VRAM (2 bytes)
-TileMapWidth equ $60    ; TileMap WIDTH
-TileMapHeight equ $1c   ; TileMap HEIGHT
+TileMapWidth equ $60    ; TileMap width
+TileMapHeight equ $1c   ; TileMap height
+ScreenHeight equ $1c    ; Screen height
+ScreenWidth equ $20     ; Screen width
 
 ; Map of the sprite attribute table (sat) buffer.
 ; Contains sprites' vertical position (vpos), horizontal posi-
@@ -293,7 +295,7 @@ DrawColumn:
 ; The tilemap is usually stored in VRAM at location $3800, and
 ; takes up 1792 bytes (32×28×2 bytes).
 ; Affects: hl, bc, de
-    ld de,TileMapHeight               ; go through all rows in the tilemap
+    ld de,ScreenHeight       ; go through all rows
     ; initialize first rows
     ld hl,0                  ; initial tile source address
     ld (NextRowSrc),hl       ; set source row
@@ -340,7 +342,6 @@ DrawColumn:
         ld a,e
         or d
         jr nz,DrawColumnLoop
-    ; this code below is useful for drawing the entire screen before turning on the display
     ; update source column index
     ld hl,(NextColSrc)
     ld b,0
