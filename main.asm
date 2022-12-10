@@ -201,6 +201,27 @@ Loop:
 
     call GetP1Keys      ; read controller port.
 
+CheckEndMap:
+; reset nextColSrc if we are at the end of the map
+    ld hl,TileMapWidth
+    add hl,hl           ; double tilemap width as tiles are made of 2 bytes (or 1 word)
+    ld bc,(nextColSrc)
+    sbc hl,bc
+    jr nz,CheckEndScreen
+    ld hl,0
+    ld (nextColSrc),hl
+
+CheckEndScreen:
+; reset nextColDst if we are at the end of the screen
+    ld a,ScreenWidth
+    add a
+    ld hl,(NextColDst)
+    ld b,l
+    sub b
+    jr nz,MovePlayerRight
+    ld hl,0
+    ld (NextColDst),a
+
 MovePlayerRight:
 ; Test if player wants to move and scrolls background in the opposite direction to give sense of movement.
     ld a,(input)         ; read input from ram mirror.
