@@ -5,8 +5,24 @@ VDPControl equ $bf
 VdpData equ $be
 VRAMWrite equ $4000
 CRAMWrite equ $c000
+ControlPortP1 equ $dc       ; Control Port Player 1
+SAT equ $3f00               ; starting location of SAT in VRAM
+ply equ $c100               ; player Y (end of SAT buffer, which is $c000-c0ff)
+plx equ $c101               ; player X
+VDPStatus equ $c102         ; VDP Status Flags
+input equ $c103             ; input from player 1 controller.
 hspeed equ $05              ; player horizontal speed
+scroll equ $c104            ; vdp scroll register buffer.
+HScrollReg equ $08          ; horizontal scroll register
+NextRowSrc equ $c105        ; store tilemap source row address (2 bytes)
+NextColSrc equ $c107        ; store tilemap source col address (2 bytes)
+NextRowDst equ $c109        ; store tilemap row address in VRAM (2 bytes)
+NextColDst equ $c10b        ; store tilemap col address in VRAM (2 bytes)
 CurrentColScreen equ $c10d  ; store screen column (0-32)
+TileMapWidth equ $60        ; TileMap width
+TileMapHeight equ $1c       ; TileMap height
+ScreenHeight equ $1c        ; Screen height
+ScreenWidth equ $20         ; Screen width
 
 ; Map of the sprite attribute table (sat) buffer.
 ; Contains sprites' vertical position (vpos), horizontal posi-
