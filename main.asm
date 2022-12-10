@@ -132,10 +132,10 @@ main:
     ;==============================================================
 
     ld a,120
-    ld (ply),a        ; set player Y.
+    ld (ply),a        ; set player Y (screen coordinates)
 
     ld a,120
-    ld (plx),a        ; set player X.
+    ld (plx),a        ; set player X (screen coordinates)
 
     ;==============================================================
     ; Initialize scroll value
@@ -224,15 +224,15 @@ CheckEndScreen:
 
 MovePlayerRight:
 ; Test if player wants to move and scrolls background in the opposite direction to give sense of movement.
-    ld a,(input)         ; read input from ram mirror.
-    bit 3,a              ; is right key pressed?
-    jp nz,MovePlayerLeft ; no, then check for left movement
+    ld a,(input)                ; read input from ram mirror.
+    bit 3,a                     ; is right key pressed?
+    jp nz,MovePlayerLeft        ; no, then check for left movement
 
-    ld a,(scroll)        ; Scroll background - update the horizontal scroll buffer.
-    sub hspeed           ; sub constant speed to scroll
-    ld (scroll),a        ; update scroll buffer.
-
-    ld b,HScrollReg      ; make the scroll happening
+    ld a,(scroll)               ; get scroll buffer
+    sub hspeed                  ; sub constant speed to scroll
+    ld (scroll),a               ; update scroll buffer
+    
+    ld b,HScrollReg             ; make the scroll happening
     call SetRegister
 
     ld a,(scroll)               ; get updated scroll in VDP
