@@ -115,109 +115,107 @@
 ;,Tile,index,$039
     db $00,$FF,$FF,$FF,$00,$FF,$FE,$FF,$40,$BF,$CF,$BF,$00,$FF,$FF,$FF,$10,$EF,$F1,$EF,$00,$FF,$FF,$FF,$00,$FF,$37,$FF,$00,$FF,$FF,$FF
 ;,Tile,index,$03A
-    db $00,$FF,$9B,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$30,$CF,$F0,$CF,$00,$7F,$7F,$7F,$00,$FF,$3F,$FF,$06,$F9,$FE,$F9,$30,$CF,$F1,$CF
-;,Tile,index,$03B
     db $00,$FF,$FF,$FF,$00,$FF,$FD,$FF,$00,$FF,$FF,$FF,$06,$F9,$E7,$F9,$00,$FF,$FF,$FF,$20,$DF,$3F,$DF,$08,$F7,$FF,$F7,$00,$FF,$FF,$FF
-;,Tile,index,$03C
+;,Tile,index,$03B
     db $40,$BF,$FF,$BF,$00,$FF,$FF,$FF,$08,$F7,$8F,$F7,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$F8,$FF,$40,$BF,$5F,$BF,$00,$FF,$FF,$FF
-;,Tile,index,$03D
+;,Tile,index,$03C
     db $00,$FF,$FF,$FF,$00,$FF,$FE,$FF,$00,$FE,$FC,$FF,$00,$C4,$C8,$FF,$10,$D0,$C8,$FF,$00,$C0,$F8,$FF,$00,$E0,$CC,$FF,$01,$C0,$87,$FF
-;,Tile,index,$03E
+;,Tile,index,$03D
     db $37,$8A,$F0,$F8,$0F,$C0,$F8,$F8,$07,$F0,$FC,$FC,$05,$F2,$FC,$FE,$0B,$E4,$FB,$FF,$0E,$E0,$FF,$FF,$18,$E1,$FF,$FF,$00,$E7,$FF,$FF
-;,Tile,index,$03F
+;,Tile,index,$03E
     db $F2,$0C,$03,$0F,$F8,$01,$0F,$0F,$F0,$07,$1F,$1F,$D0,$2F,$1F,$3F,$E8,$17,$6F,$7F,$B8,$07,$7F,$7F,$4C,$03,$BF,$3F,$40,$33,$BF,$3F
-;,Tile,index,$040
+;,Tile,index,$03F
     db $00,$FF,$FF,$FF,$02,$FD,$FF,$FD,$00,$FF,$FF,$FF,$08,$F7,$E9,$F7,$00,$FF,$FF,$FF,$40,$BF,$5F,$BF,$00,$FF,$F7,$FF,$00,$FF,$FF,$FF
-;,Tile,index,$041
+;,Tile,index,$040
     db $00,$FF,$BF,$FF,$00,$FF,$FF,$FF,$10,$EF,$97,$EF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$01,$FE,$F9,$FE,$80,$7F,$9F,$7F,$00,$FF,$FF,$FF
-;,Tile,index,$042
+;,Tile,index,$041
     db $40,$BF,$DB,$BF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$0C,$F3,$CC,$F3,$00,$FF,$FF,$FF,$00,$FF,$3F,$FF,$01,$FE,$F9,$FE,$0C,$F3,$CD,$F3
-;,Tile,index,$043
+;,Tile,index,$042
     db $02,$81,$02,$FF,$02,$81,$02,$FF,$01,$80,$03,$FF,$00,$C0,$84,$FF,$00,$E0,$C8,$FF,$00,$C4,$F8,$FF,$10,$D2,$CC,$FF,$00,$C5,$CE,$FF
-;,Tile,index,$044
+;,Tile,index,$043
     db $00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$02,$F3,$FD,$F1,$01,$DD,$E2,$DC,$4F,$88,$B0,$80,$32,$C2,$CC,$C0,$0C,$F1,$F1,$F1,$00,$FF,$FF,$FF
-;,Tile,index,$045
+;,Tile,index,$044
     db $40,$3F,$BF,$3F,$40,$3F,$BF,$3F,$60,$27,$9F,$07,$40,$5D,$A3,$1D,$79,$08,$86,$00,$26,$21,$99,$01,$58,$07,$87,$07,$40,$3F,$BF,$3F
-;,Tile,index,$046
+;,Tile,index,$045
     db $00,$FE,$FF,$FE,$01,$FE,$FF,$FF,$01,$FC,$FF,$FD,$03,$FC,$FF,$FF,$03,$F8,$FF,$FB,$61,$B8,$DF,$D9,$71,$B8,$CF,$C9,$35,$98,$EB,$A9
-;,Tile,index,$047
+;,Tile,index,$046
     db $00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$80,$FF,$7F,$7F,$80,$FF,$7F,$7F,$C0,$FF,$3F,$3F,$C4,$F7,$3B,$33,$CC,$E7,$3B,$2B,$CC,$A7,$3B,$2B
-;,Tile,index,$048
+;,Tile,index,$047
     db $3D,$98,$E3,$A1,$1D,$C8,$F3,$D1,$1D,$C8,$F3,$D1,$0E,$E4,$F9,$E8,$36,$A4,$C9,$80,$DB,$13,$E4,$C0,$2D,$89,$F2,$A0,$07,$F7,$F8,$F0
-;,Tile,index,$049
+;,Tile,index,$048
     db $DC,$8F,$33,$13,$D8,$8F,$37,$17,$F8,$9F,$27,$27,$B0,$3F,$4F,$0F,$B4,$23,$4F,$07,$7E,$47,$99,$19,$FC,$9F,$23,$23,$20,$3F,$DF,$1F
-;,Tile,index,$04A
+;,Tile,index,$049
     db $00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FE,$FF,$FE,$0F,$F1,$FE,$FE,$ED,$01,$FF,$ED
-;,Tile,index,$04B
+;,Tile,index,$04A
     db $00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FE,$FF,$FE,$0F,$F1,$FE,$FE,$2D,$C1,$FF,$ED,$D7,$13,$ED,$C5,$F7,$33,$DD,$D5,$77,$33,$DD,$55
-;,Tile,index,$04C
+;,Tile,index,$04B
     db $00,$FF,$FF,$FF,$0E,$E0,$FF,$EE,$FD,$11,$EE,$EC,$D7,$13,$FD,$D5,$77,$33,$DD,$55,$77,$33,$DD,$55,$7B,$3B,$DF,$5B,$BB,$BB,$FF,$BB
-;,Tile,index,$04D
+;,Tile,index,$04C
     db $6E,$80,$FF,$EE,$DD,$11,$EE,$CC,$F7,$33,$DD,$D5,$77,$33,$DD,$55,$77,$33,$DD,$55,$3B,$3B,$FF,$3B,$BB,$BB,$FF,$BB,$FF,$FF,$BB,$BB
-;,Tile,index,$04E
+;,Tile,index,$04D
     db $EE,$01,$FF,$EF,$DD,$10,$EF,$CD,$75,$31,$DE,$54,$77,$33,$DD,$55,$77,$33,$DD,$55,$BB,$BB,$FD,$B9,$BB,$BB,$FF,$BB,$FF,$FF,$BB,$BB
-;,Tile,index,$04F
+;,Tile,index,$04E
     db $00,$FF,$FF,$FF,$E0,$0F,$FF,$EF,$DE,$10,$EF,$CE,$7D,$31,$DE,$5C,$77,$33,$DD,$55,$77,$33,$DD,$55,$B7,$B3,$FD,$B5,$BB,$BB,$FF,$BB
-;,Tile,index,$050
+;,Tile,index,$04F
     db $00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$E0,$1F,$FF,$FF,$C8,$07,$FF,$CF,$7E,$30,$CF,$4E,$75,$31,$DE,$54,$77,$33,$DD,$55
-;,Tile,index,$051
+;,Tile,index,$050
     db $00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$E0,$1F,$FF,$FF,$CE,$00,$FF,$CE
-;,Tile,index,$052
+;,Tile,index,$051
     db $EE,$00,$FF,$EE,$DD,$11,$EE,$CC,$77,$33,$DD,$55,$77,$33,$DD,$55,$77,$33,$DD,$55,$BB,$BB,$FF,$BB,$BB,$BB,$FF,$BB,$FF,$FF,$BB,$BB
-;,Tile,index,$053
+;,Tile,index,$052
     db $D7,$13,$ED,$C5,$77,$33,$DD,$55,$77,$33,$DD,$55,$7B,$3B,$DF,$5B,$BB,$BB,$FF,$BB,$BF,$BF,$FB,$BB,$F7,$F7,$BF,$BF,$F6,$F6,$FF,$FF
-;,Tile,index,$054
+;,Tile,index,$053
     db $7B,$3B,$DF,$5B,$7B,$3B,$FF,$7B,$BF,$BF,$FB,$BB,$BF,$BF,$F7,$BF,$FF,$FF,$B6,$BF,$FF,$FF,$62,$FF,$FF,$FF,$62,$FF,$FF,$FF,$20,$FF
-;,Tile,index,$055
+;,Tile,index,$054
     db $BF,$BF,$FB,$BB,$F7,$F7,$BF,$BF,$76,$76,$FF,$FF,$62,$62,$FF,$FF,$22,$22,$FF,$FF,$20,$20,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF
-;,Tile,index,$056
+;,Tile,index,$055
     db $FF,$FF,$F7,$FF,$FF,$FF,$77,$FF,$FF,$FF,$22,$FF,$FF,$FF,$22,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF
-;,Tile,index,$057
+;,Tile,index,$056
     db $77,$77,$FF,$FF,$77,$77,$FF,$FF,$22,$22,$FF,$FF,$22,$22,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF
-;,Tile,index,$058
+;,Tile,index,$057
     db $FB,$FB,$BF,$BB,$FF,$FF,$FB,$FB,$FF,$FF,$77,$FF,$FF,$FF,$27,$FF,$FF,$FF,$23,$FF,$FF,$FF,$02,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF
-;,Tile,index,$059
+;,Tile,index,$058
     db $B7,$B3,$FD,$B5,$BF,$BB,$FD,$BD,$FB,$FB,$BF,$BB,$7B,$7B,$FF,$FB,$77,$77,$FB,$FB,$37,$37,$FF,$FF,$27,$27,$FF,$FF,$02,$02,$FF,$FF
-;,Tile,index,$05A
+;,Tile,index,$059
     db $7D,$31,$CE,$4C,$77,$33,$DD,$55,$77,$33,$DD,$55,$B7,$B3,$FD,$B5,$BB,$BB,$FF,$BB,$FB,$FB,$BF,$BB,$FF,$FF,$7B,$FB,$FF,$FF,$77,$FF
-;,Tile,index,$05B
+;,Tile,index,$05A
     db $00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$02,$FC,$FF,$FE,$0D,$F1,$FE,$FC,$2F,$C3,$FD,$ED,$D7,$13,$ED,$C5
-;,Tile,index,$05C
+;,Tile,index,$05B
     db $02,$FC,$FF,$FE,$0D,$F1,$FE,$FC,$2F,$C3,$FD,$ED,$D7,$13,$ED,$C5,$F7,$33,$DD,$D5,$73,$33,$DF,$53,$7B,$3B,$DF,$5B,$3F,$3F,$FB,$3B
-;,Tile,index,$05D
+;,Tile,index,$05C
     db $D7,$13,$ED,$C5,$77,$33,$DD,$55,$77,$33,$DD,$55,$7B,$3B,$DF,$5B,$BB,$BB,$FF,$BB,$BF,$BF,$FB,$BB,$FF,$FF,$B7,$BF,$FF,$FF,$F6,$FF
-;,Tile,index,$05E
+;,Tile,index,$05D
     db $7B,$3B,$DF,$5B,$7B,$3B,$FF,$7B,$BF,$BF,$FB,$BB,$B7,$B7,$FF,$BF,$F6,$F6,$BF,$BF,$62,$62,$FF,$FF,$62,$62,$FF,$FF,$20,$20,$FF,$FF
-;,Tile,index,$05F
+;,Tile,index,$05E
     db $BF,$BF,$FB,$BB,$FF,$FF,$B7,$BF,$FF,$FF,$76,$FF,$FF,$FF,$62,$FF,$FF,$FF,$22,$FF,$FF,$FF,$20,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF
-;,Tile,index,$060
+;,Tile,index,$05F
     db $F7,$F7,$FF,$FF,$77,$77,$FF,$FF,$22,$22,$FF,$FF,$22,$22,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF
-;,Tile,index,$061
+;,Tile,index,$060
     db $FF,$FF,$77,$FF,$FF,$FF,$77,$FF,$FF,$FF,$22,$FF,$FF,$FF,$22,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF
-;,Tile,index,$062
+;,Tile,index,$061
     db $FB,$FB,$BF,$BB,$FF,$FF,$FB,$FB,$77,$77,$FF,$FF,$27,$27,$FF,$FF,$23,$23,$FF,$FF,$02,$02,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF
-;,Tile,index,$063
+;,Tile,index,$062
     db $FF,$FF,$72,$FF,$FF,$FF,$22,$FF,$FF,$FF,$20,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF
-;,Tile,index,$064
+;,Tile,index,$063
     db $00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF
-;,Tile,index,$065
+;,Tile,index,$064
     db $FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF
-;,Tile,index,$066
+;,Tile,index,$065
     db $FF,$FF,$02,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF
-;,Tile,index,$067
+;,Tile,index,$066
     db $27,$27,$FF,$FF,$22,$22,$FF,$FF,$02,$02,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF
-;,Tile,index,$068
+;,Tile,index,$067
     db $F7,$33,$DD,$D5,$73,$33,$DF,$53,$7B,$3B,$DF,$5B,$3F,$3F,$FB,$3B,$BE,$BE,$FF,$BF,$F6,$F6,$BF,$BF,$E2,$E2,$FF,$FF,$60,$60,$FF,$FF
-;,Tile,index,$069
+;,Tile,index,$068
     db $BF,$BF,$FE,$BF,$FF,$FF,$B6,$BF,$FF,$FF,$E2,$FF,$FF,$FF,$60,$FF,$FF,$FF,$20,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF
-;,Tile,index,$06A
+;,Tile,index,$069
     db $72,$72,$FF,$FF,$22,$22,$FF,$FF,$20,$20,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF
-;,Tile,index,$06B
+;,Tile,index,$06A
     db $FF,$FF,$20,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF,$FF,$FF,$00,$FF
-;,Tile,index,$06C
+;,Tile,index,$06B
     db $F7,$33,$DD,$D5,$73,$33,$DF,$53,$7B,$3B,$DF,$5B,$3F,$3F,$FB,$3B,$BF,$BF,$FE,$BF,$FF,$FF,$B6,$BF,$FF,$FF,$E2,$FF,$FF,$FF,$60,$FF
-;,Tile,index,$06D
+;,Tile,index,$06C
     db $BE,$BE,$FF,$BF,$F6,$F6,$BF,$BF,$E2,$E2,$FF,$FF,$60,$60,$FF,$FF,$20,$20,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF
-;,Tile,index,$06E
+;,Tile,index,$06D
     db $20,$20,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF
 
