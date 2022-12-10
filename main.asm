@@ -5,23 +5,8 @@ VDPControl equ $bf
 VdpData equ $be
 VRAMWrite equ $4000
 CRAMWrite equ $c000
-ControlPortP1 equ $dc   ; Control Port Player 1
-SAT equ $3f00           ; starting location of SAT in VRAM
-ply equ $c100           ; player Y (end of SAT buffer, which is $c000-c0ff)
-plx equ $c101           ; player X
-VDPStatus equ $c102     ; VDP Status Flags
-input equ $c103         ; input from player 1 controller.
-hspeed equ $03          ; player horizontal speed
-scroll equ $c104        ; vdp scroll register buffer.
-HScrollReg equ $08      ; horizontal scroll register
-NextRowSrc equ $c105    ; store tilemap source row address (2 bytes)
-NextColSrc equ $c107    ; store tilemap source col address (2 bytes)
-NextRowDst equ $c109    ; store tilemap row address in VRAM (2 bytes)
-NextColDst equ $c10b    ; store tilemap col address in VRAM (2 bytes)
-TileMapWidth equ $60    ; TileMap width
-TileMapHeight equ $1c   ; TileMap height
-ScreenHeight equ $1c    ; Screen height
-ScreenWidth equ $20     ; Screen width
+hspeed equ $05              ; player horizontal speed
+CurrentColScreen equ $c10d  ; store screen column (0-32)
 
 ; Map of the sprite attribute table (sat) buffer.
 ; Contains sprites' vertical position (vpos), horizontal posi-
@@ -138,6 +123,10 @@ main:
         call DrawColumn
     endr
 
+    ; reset destination column
+    ld hl,0
+    ld (NextColDst),hl
+
     ;==============================================================
     ; Initialize player position
     ;==============================================================
@@ -149,11 +138,15 @@ main:
     ld (plx),a        ; set player X.
 
     ;==============================================================
-    ; Initialize scroll register buffer
+    ; Initialize scroll value
     ;==============================================================    
-
-    xor a               ; set A = 0.
-    ld (scroll),a
+    
+    ld a,0                  ; set A = 0.
+    ld (scroll),a           ; initial scroll value in buffer
+    ld b,HScrollReg         ; reflect it in HScrollReg
+    call SetRegister
+    ld a,0
+    ld (CurrentColScreen),a ; initial CurrentColScreen
 
     ;==============================================================
     ; Put main character in the SAT BUFFER
@@ -220,6 +213,13 @@ MovePlayerRight:
 
     ld b,HScrollReg      ; make the scroll happening
     call SetRegister
+
+    ld a,(scroll)               ; get updated scroll in VDP
+    and %11111000               ; get top 5 bits
+    ld hl,(CurrentColScreen)    ; get old CurrentColScreen
+    ld b,l
+    cp b
+    call nz,DrawColumn
  
 ;    ; move the player to the right
 ;    ld a,(plx)           ; get player's hpos (x-coordinate)
@@ -250,6 +250,10 @@ MovePlayerEnd:
 
     ; Update player sprites in the buffer.
     call UpdateSATBuff
+
+    ld a,(scroll)               ; get updated scroll in VDP
+    and %11111000               ; get top 5 bits
+    ld (CurrentColScreen),a     ; update CurrentColScreen
 
     jp Loop             ; jump back to start of main loop
 
