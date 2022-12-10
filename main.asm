@@ -11,7 +11,7 @@ ply equ $c100               ; player Y (end of SAT buffer, which is $c000-c0ff)
 plx equ $c101               ; player X
 VDPStatus equ $c102         ; VDP Status Flags
 input equ $c103             ; input from player 1 controller.
-hspeed equ $05              ; player horizontal speed
+hspeed equ $0a              ; player horizontal speed
 scroll equ $c104            ; vdp scroll register buffer.
 HScrollReg equ $08          ; horizontal scroll register
 NextRowSrc equ $c105        ; store tilemap source row address (2 bytes)
@@ -251,7 +251,8 @@ MovePlayerRight:
     ld b,HScrollReg             ; make the scroll happening
     call SetRegister
 
-    ld a,(scroll)               ; get updated scroll in VDP
+    ; draw new column only if needed (in case the updated column is different than the one shown on screen)
+    ld a,(scroll)               ; get updated scroll buffer
     and %11111000               ; get top 5 bits
     ld hl,(CurrentColScreen)    ; get old CurrentColScreen
     ld b,l
