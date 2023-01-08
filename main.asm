@@ -137,6 +137,8 @@ main:
     ; draw entire screen column by column
     rept 32
         call DrawColumn
+        ld a,2
+        call UpdateColumnIndex
     endr
 
     ;==============================================================
@@ -252,6 +254,8 @@ MovePlayerRight:
     ld b,l
     cp b
     call nz,DrawColumn
+    ld a,2
+    call UpdateColumnIndex
  
 ;    ; move the player to the right
 ;    ld a,(plx)           ; get player's hpos (x-coordinate)
@@ -378,17 +382,22 @@ DrawColumn:
         ld a,e
         or d
         jr nz,DrawColumnLoop
+
+    ret
+
+UpdateColumnIndex:
+; Update the column index
+; Parameters: a = index offset
+; Affects: a, hl, bc
     ; update source column index
     ld hl,(NextColSrc)
     ld b,0
-    ld a,2
     ld c,a
     add hl,bc
     ld (NextColSrc),hl
     ; update destination column index
     ld hl,(NextColDst)
     ld b,0
-    ld a,2
     ld c,a
     add hl,bc
     ld (NextColDst),hl
