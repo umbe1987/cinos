@@ -11,7 +11,7 @@ ply equ $c100               ; player Y (end of SAT buffer, which is $c000-c0ff)
 plx equ $c101               ; player X
 VDPStatus equ $c102         ; VDP Status Flags
 input equ $c103             ; input from player 1 controller.
-hspeed equ $0a              ; player horizontal speed
+hspeed equ $08              ; player horizontal speed
 scroll equ $c104            ; vdp scroll register buffer.
 HScrollReg equ $08          ; horizontal scroll register
 NextRowSrc equ $c105        ; store tilemap source row address (2 bytes)
@@ -138,10 +138,6 @@ main:
     rept 32
         call DrawColumn
     endr
-
-    ; reset destination column
-    ld hl,0
-    ld (NextColDst),hl
 
     ;==============================================================
     ; Initialize player position
