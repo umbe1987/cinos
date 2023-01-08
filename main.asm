@@ -155,8 +155,6 @@ main:
     
     ld a,0                  ; set A = 0.
     ld (scroll),a           ; initial scroll value in buffer
-    ld b,HScrollReg         ; reflect it in HScrollReg
-    call SetRegister
     ld a,0
     ld (CurrentColScreen),a ; initial CurrentColScreen
 
