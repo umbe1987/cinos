@@ -11,7 +11,6 @@ ply equ $c100               ; player Y (end of SAT buffer, which is $c000-c0ff)
 plx equ $c101               ; player X
 VDPStatus equ $c102         ; VDP Status Flags
 input equ $c103             ; input from player 1 controller.
-hspeed equ $08              ; player horizontal speed
 scroll equ $c104            ; vdp scroll register buffer.
 HScrollReg equ $08          ; horizontal scroll register
 NextRowSrc equ $c105        ; store tilemap source row address (2 bytes)
@@ -19,10 +18,16 @@ NextColSrc equ $c107        ; store tilemap source col address (2 bytes)
 NextRowDst equ $c109        ; store tilemap row address in VRAM (2 bytes)
 NextColDst equ $c10b        ; store tilemap col address in VRAM (2 bytes)
 CurrentColScreen equ $c10d  ; store screen column (0-32)
-TileMapWidth equ $60        ; TileMap width
-TileMapHeight equ $1c       ; TileMap height
-ScreenHeight equ $1c        ; Screen height
-ScreenWidth equ $20         ; Screen width
+InputBuffer equ $c10e       ; store copy of input
+
+; constants
+MAPWIDTH equ $60            ; Map width
+MAPHEIGHT equ $1c           ; Map height
+TILEMAPWIDTH equ $20        ; TileMap width (256×224 in px)
+TILEMAPHEIGHT equ $1c       ; TileMap height (256×224 in px)
+VIRTUALSCREENHEIGHT equ $1c ; Screen height (typically 248×192 in px)
+VIRTUALSCREENWIDTH equ $1f  ; Screen width (typically 248×192 in px)
+HSPEED equ $05              ; player horizontal speed
 
 ; Map of the sprite attribute table (sat) buffer.
 ; Contains sprites' vertical position (vpos), horizontal posi-
@@ -134,12 +139,16 @@ main:
     ld hl,0                  ; initial tile destination address
     ld (NextColDst),hl       ; set destination column
 
-    ; draw entire screen column by column
+    ; draw entire tilemap column by column
     rept 32
         call DrawColumn
-        ld a,2
+        ld bc,$0002
         call UpdateColumnIndex
     endr
+
+    ; undo last index column update
+    ld bc,-2
+    call UpdateColumnIndex
 
     ;==============================================================
     ; Initialize player position
@@ -155,8 +164,12 @@ main:
     ; Initialize scroll value
     ;==============================================================    
     
-    ld a,0                  ; set A = 0.
+    ld a,8                  ; initialising the xScroll register to 8 rather than 0,
+                            ; means the intended column on the left of the screen is shifted 8 pixels,
+                            ; out of the hidden area and thus visible.
     ld (scroll),a           ; initial scroll value in buffer
+    ld b,HScrollReg         ; reflect it in HScrollReg
+    call SetRegister
     ld a,0
     ld (CurrentColScreen),a ; initial CurrentColScreen
 
@@ -175,6 +188,10 @@ main:
     call UpdateSATBuff          ; update SAT buffer.
 
     call LoadSAT                ; load sat from buffer.
+
+    ; initialize input (to check for direction changes)
+    ld a,%00000000
+    ld (InputBuffer),a
 
     ; Use VDP R0 bit5 to hide left char column (used to update tile when scrolling)
     ; https://www.smspower.org/Development/SMSOfficialDocs#VDPREGISTERS
@@ -213,35 +230,22 @@ Loop:
 
     call GetP1Keys      ; read controller port.
 
-CheckEndMap:
-; reset nextColSrc if we are at the end of the map
-    ld hl,TileMapWidth
-    add hl,hl           ; double tilemap width as tiles are made of 2 bytes (or 1 word)
-    ld bc,(nextColSrc)
-    sbc hl,bc
-    jr nz,CheckEndScreen
-    ld hl,0
-    ld (nextColSrc),hl
-
-CheckEndScreen:
-; reset nextColDst if we are at the end of the screen
-    ld a,ScreenWidth
-    add a
-    ld hl,(NextColDst)
-    ld b,l
-    sub b
-    jr nz,MovePlayerRight
-    ld hl,0
-    ld (NextColDst),a
-
 MovePlayerRight:
 ; Test if player wants to move and scrolls background in the opposite direction to give sense of movement.
     ld a,(input)                ; read input from ram mirror.
     bit 3,a                     ; is right key pressed?
     jp nz,MovePlayerLeft        ; no, then check for left movement
 
+    ld hl,(InputBuffer)         ; load previous input
+    ld b,l
+    bit 2,b                     ; was right key pressed?
+    call nz,ChangeDir           ; account for changing direction
+    ld h,0                      ; update input buffer
+    ld l,%00010000
+    ld (InputBuffer),hl
+
     ld a,(scroll)               ; get scroll buffer
-    sub hspeed                  ; sub constant speed to scroll
+    sub HSPEED                  ; sub constant speed to scroll
     ld (scroll),a               ; update scroll buffer
     
     ld b,HScrollReg             ; make the scroll happening
@@ -253,33 +257,75 @@ MovePlayerRight:
     ld hl,(CurrentColScreen)    ; get old CurrentColScreen
     ld b,l
     cp b
-    call nz,DrawColumn
-    ld a,2
+    jp z,CheckEndMap
+    call DrawColumn
+    ld bc,$0002
     call UpdateColumnIndex
  
 ;    ; move the player to the right
 ;    ld a,(plx)           ; get player's hpos (x-coordinate)
-;    add a,hspeed         ; add constant horizontal speed
+;    add a,HSPEED         ; add constant horizontal speed
 ;    ld (plx),a           ; update player x-coordinate
 ; 
-    jp MovePlayerEnd     ; exit move player part
+    jp CheckEndMap     ; exit move player part
 
 MovePlayerLeft:
 ; Test if player wants to move and scrolls background in the opposite direction to give sense of movement.
-    bit 2,a              ; is left key pressed?
-    jp nz,MovePlayerEnd  ; no - end key check.
+    bit 2,a                     ; is left key pressed?
+    jp nz,CheckEndMap           ; no, then exit move player part
 
-    ld a,(scroll)        ; Scroll background - update the horizontal scroll buffer.
-    add hspeed           ; add constant speed to scroll
-    ld (scroll),a        ; update scroll buffer.
+    ld hl,(InputBuffer)         ; load previous input
+    ld b,l
+    bit 3,b                     ; was right key pressed?
+    call nz,ChangeDir           ; account for changing direction
+    ld h,$00                      ; update input buffer
+    ld l,%00100000
+    ld (InputBuffer),hl
 
-    ld b,HScrollReg      ; make the scroll happening
-    call SetRegister
+    ld a,(scroll)               ; get scroll buffer
+    add HSPEED                  ; sub constant speed to scroll
+    ld (scroll),a               ; update scroll buffer
     
+    ld b,HScrollReg             ; make the scroll happening
+    call SetRegister
+
+    ; draw new column only if needed (in case the updated column is different than the one shown on screen)
+    ld a,(scroll)               ; get updated scroll buffer
+    and %11111000               ; get top 5 bits
+    ld hl,(CurrentColScreen)    ; get old CurrentColScreen
+    ld b,l
+    cp b
+    jp z,CheckEndMap
+    call DrawColumn
+    ld bc,-2
+    call UpdateColumnIndex
+
 ;    ; move the player to the left
 ;    ld a,(plx)           ; get player's hpos (x-coordinate)
-;    sub a,hspeed         ; add constant horizontal speed
+;    sub a,HSPEED         ; add constant horizontal speed
 ;    ld (plx),a           ; update player x-coordinate
+; 
+
+CheckEndMap:
+; reset nextColSrc if we are at the end of the map
+    ld hl,MAPWIDTH
+    add hl,hl           ; double tilemap width as tiles are made of 2 bytes (or 1 word)
+    ld bc,(nextColSrc)
+    sbc hl,bc
+    jr nz,CheckEndScreen
+    ld hl,0
+    ld (nextColSrc),hl
+
+CheckEndScreen:
+; reset nextColDst if we are at the end of the screen
+    ld a,TILEMAPWIDTH
+    add a
+    ld hl,(NextColDst)
+    ld b,l
+    sub b
+    jr nz,MovePlayerEnd
+    ld hl,0
+    ld (NextColDst),a
 
 MovePlayerEnd:
 ; end of player movements
@@ -287,6 +333,7 @@ MovePlayerEnd:
     ; Update player sprites in the buffer.
     call UpdateSATBuff
 
+    ; save copy of current scroll value
     ld a,(scroll)               ; get updated scroll in VDP
     and %11111000               ; get top 5 bits
     ld (CurrentColScreen),a     ; update CurrentColScreen
@@ -335,7 +382,7 @@ DrawColumn:
 ; The tilemap is usually stored in VRAM at location $3800, and
 ; takes up 1792 bytes (32×28×2 bytes).
 ; Affects: hl, bc, de
-    ld de,ScreenHeight       ; go through all rows
+    ld de,TILEMAPHEIGHT      ; go through all rows
     ; initialize first rows
     ld hl,0                  ; initial tile source address
     ld (NextRowSrc),hl       ; set source row
@@ -372,7 +419,7 @@ DrawColumn:
         add hl,bc                         ; add 64 to the target address
         ld (NextRowDst),hl                ; store new VRAM row address
 
-        ld hl,TileMapWidth                ; assuming map is a row-major matrix
+        ld hl,MAPWIDTH                    ; assuming map is a row-major matrix
         add hl,hl                         ; double tilemap width as tiles are made of 2 bytes (or 1 word)
         ld bc,(NextRowSrc)
         add hl,bc                         ; add map's width ×2 (again, a constant) to the source address
@@ -387,20 +434,24 @@ DrawColumn:
 
 UpdateColumnIndex:
 ; Update the column index
-; Parameters: a = index offset
-; Affects: a, hl, bc
+; Parameters: bc = index offset
+; Affects: hl, bc
     ; update source column index
     ld hl,(NextColSrc)
-    ld b,0
-    ld c,a
     add hl,bc
     ld (NextColSrc),hl
     ; update destination column index
     ld hl,(NextColDst)
-    ld b,0
-    ld c,a
     add hl,bc
     ld (NextColDst),hl
+
+    ret
+
+ChangeDir:
+    ld hl,(NextColSrc)          ; update column index of source image
+    ld bc,$0004                 ; load screen width size
+    sbc hl,bc
+    ld (NextColSrc),hl
 
     ret
 
